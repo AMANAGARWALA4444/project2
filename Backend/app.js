@@ -12,7 +12,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cors({
-    origin:["http://localhost:3000","https://project2-78r3.vercel.app"]
+    origin: '*'
 }));
 
 app.use('/api/v1', transactionalRoutes);
