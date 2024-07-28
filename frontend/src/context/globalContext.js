@@ -1,8 +1,10 @@
 import React, { useState, createContext, useContext } from "react";
 import axios from "axios";
 
+
+console.log(process.env.REACT_APP_BACKEND_KEY)
 // const baseURL = "http://localhost:5000/api/v1/";
-const baseURL= `${process.env.REACT_BACKEND_KEY}/api/v1/`
+const baseURL= `${process.env.REACT_APP_BACKEND_KEY}/api/v1/`
 
 const GlobalContext = createContext();
 
