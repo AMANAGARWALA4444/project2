@@ -1,170 +1,154 @@
 import React, { useState, createContext, useContext } from "react";
-import axios from "axios";
 
-
-console.log(process.env.REACT_APP_BACKEND_KEY)
-// const baseURL = "http://localhost:5000/api/v1/";
-const baseURL= `${process.env.REACT_APP_BACKEND_KEY}/api/v1/`
+console.log(process.env.REACT_APP_BACKEND_KEY);
+const baseURL = `${process.env.REACT_APP_BACKEND_KEY}/api/v1/`;
 
 const GlobalContext = createContext();
 
-export const GlobalProvider = ({ children }) => 
-{
+export const GlobalProvider = ({ children }) => {
     const [incomes, setIncomes] = useState([]);
     const [expenses, setExpenses] = useState([]);
 
-    //for income
-    const addIncome = (income) => 
-    {
-        axios.post(`${baseURL}add-income`, income)
-            .then((response) => 
-            {
-                getIncomes();
-                console.log(response);
-                return response;
-            })
-            .catch((err) => 
-            {
-                console.log(err);
+    // For income
+    const addIncome = async (income) => {
+        try {
+            const response = await fetch(`${baseURL}add-income`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(income)
             });
-        getIncomes();
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            await getIncomes();
+            console.log(await response.json());
+        } catch (err) {
+            console.log(err);
+        }
     };
 
-    const getIncomes = () => 
-    {
-        axios.get(`${baseURL}get-incomes`)
-            .then(response => 
-            {
-                const sortedData = response.data.sort((a, b) => new Date(b.date) - new Date(a.date));
-                setIncomes(sortedData);
-                console.log(sortedData);
-            })
-            .catch(error => 
-            {
-                console.error('There was an error fetching the incomes!', error);
-            });
-    };
-    
-    
-    const deleteIncome = (id) => 
-    {
-        axios.delete(`${baseURL}delete-income/${id}`)
-            .then(res => 
-            {
-                getIncomes();
-            })
-            .catch(error => 
-            {
-                console.error('There was an error deleting the income!', error);
-            });
-        getIncomes();
+    const getIncomes = async () => {
+        try {
+            const response = await fetch(`${baseURL}get-incomes`);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+            const sortedData = data.sort((a, b) => new Date(b.date) - new Date(a.date));
+            setIncomes(sortedData);
+            console.log(sortedData);
+        } catch (error) {
+            console.error('There was an error fetching the incomes!', error);
+        }
     };
 
-
-    const totalIncome = () => 
-    {
-        let totalIncome = 0;
-        incomes.forEach((income) =>{
-            totalIncome = totalIncome + income.amount
-        })
-        return totalIncome;
-    }
-    
-    //for expense
-    const addExpense = (expense) => 
-    {
-        axios.post(`${baseURL}add-expense`, expense)
-            .then((response) => 
-            {
-                getExpenses();
-                console.log(response);
-                return response;
-            })
-            .catch((err) => 
-            {
-                console.log(err);
+    const deleteIncome = async (id) => {
+        try {
+            const response = await fetch(`${baseURL}delete-income/${id}`, {
+                method: 'DELETE'
             });
-        getExpenses();
-    };
-    
-    const getExpenses = () => 
-    {
-        axios.get(`${baseURL}get-expenses`)
-            .then(response => 
-            {
-                const sortedData = response.data.sort((a, b) => new Date(b.date) - new Date(a.date));
-                setExpenses(sortedData);
-                console.log(sortedData);
-            })
-            .catch(error => 
-            {
-                console.error('There was an error fetching the expenses!', error);
-            });
-    };
-        
-        
-    const deleteExpense = (id) => 
-    {
-        axios.delete(`${baseURL}delete-expense/${id}`)
-            .then(res => 
-            {
-                getExpenses();
-            })
-            .catch(error => 
-            {
-                console.error('There was an error deleting the expense!', error);
-            });
-        getExpenses();
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            await getIncomes();
+        } catch (error) {
+            console.error('There was an error deleting the income!', error);
+        }
     };
 
+    const totalIncome = () => {
+        return incomes.reduce((total, income) => total + income.amount, 0);
+    };
 
-    const totalExpense = () => 
-    {
-        let totalExpense = 0;
-        expenses.forEach((expense) =>
-        {
-            totalExpense = totalExpense + expense.amount
-        })
-        return totalExpense;
-    }
+    // For expense
+    const addExpense = async (expense) => {
+        try {
+            const response = await fetch(`${baseURL}add-expense`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(expense)
+            });
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            await getExpenses();
+            console.log(await response.json());
+        } catch (err) {
+            console.log(err);
+        }
+    };
 
-    //calculate current balance
-    const currentBalance = () =>
-    {
+    const getExpenses = async () => {
+        try {
+            const response = await fetch(`${baseURL}get-expenses`);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+            const sortedData = data.sort((a, b) => new Date(b.date) - new Date(a.date));
+            setExpenses(sortedData);
+            console.log(sortedData);
+        } catch (error) {
+            console.error('There was an error fetching the expenses!', error);
+        }
+    };
+
+    const deleteExpense = async (id) => {
+        try {
+            const response = await fetch(`${baseURL}delete-expense/${id}`, {
+                method: 'DELETE'
+            });
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            await getExpenses();
+        } catch (error) {
+            console.error('There was an error deleting the expense!', error);
+        }
+    };
+
+    const totalExpense = () => {
+        return expenses.reduce((total, expense) => total + expense.amount, 0);
+    };
+
+    // Calculate current balance
+    const currentBalance = () => {
         return totalIncome() - totalExpense();
-    }
+    };
 
-    //transactions
-    const transactionalHistory = () =>
-    {
-        const newExpenses = expenses.map((e) => ({...e, amount : e.amount * -1}));
-        const history = [...incomes, ...newExpenses]
-
-        history.sort((a, b) => new Date(b.date) - new Date(a.date))
+    // Transactional history
+    const transactionalHistory = () => {
+        const newExpenses = expenses.map((e) => ({ ...e, amount: e.amount * -1 }));
+        const history = [...incomes, ...newExpenses];
+        history.sort((a, b) => new Date(b.date) - new Date(a.date));
         console.log(history);
         return history;
-    }
+    };
 
     return (
-        <GlobalContext.Provider value = {{ 
-            addIncome, 
-            getIncomes, 
-            incomes, 
-            totalIncome, 
+        <GlobalContext.Provider value={{
+            addIncome,
+            getIncomes,
+            incomes,
+            totalIncome,
             deleteIncome,
-            addExpense, 
-            getExpenses, 
-            expenses, 
-            totalExpense, 
+            addExpense,
+            getExpenses,
+            expenses,
+            totalExpense,
             deleteExpense,
             currentBalance,
-            transactionalHistory }}>
+            transactionalHistory
+        }}>
             {children}
         </GlobalContext.Provider>
     );
 };
 
-export const useGlobalContext = () => 
-{
+export const useGlobalContext = () => {
     return useContext(GlobalContext);
 };
