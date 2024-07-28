@@ -12,16 +12,16 @@ const app = express();
 
 app.use(express.json());
 app.use(cors({
-    origin:["http://localhost:3000","https://project2-78r3.vercel.app"],
-    credentials:true
+    origin: ["http://localhost:3000", "https://project2-78r3.vercel.app"],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true
 }));
 
 app.use('/api/v1', transactionalRoutes);
 
-const PORT = process.env.PORT;
-
-app.listen(PORT, () =>
-{
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
     connectToMongoDB();
-    console.log(`Port is running on server ${PORT}`);
-})
+    console.log(`Server is running on port ${PORT}`);
+});
